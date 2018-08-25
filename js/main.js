@@ -1,100 +1,101 @@
-'use strict';
+(() => {
+  'use strict';
 
-const config = {
-  apiKey: "AIzaSyB4a2DypoEWh2_gkG9MOhp9Jz4k2HAhczE",
-  authDomain: "myfirebasechatapp-2fe56.firebaseapp.com",
-  databaseURL: "https://myfirebasechatapp-2fe56.firebaseio.com",
-  projectId: "myfirebasechatapp-2fe56",
-  storageBucket: "myfirebasechatapp-2fe56.appspot.com",
-  messagingSenderId: "941607125908"
-};
-firebase.initializeApp(config);
+  const config = {
+    apiKey: "AIzaSyB4a2DypoEWh2_gkG9MOhp9Jz4k2HAhczE",
+    authDomain: "myfirebasechatapp-2fe56.firebaseapp.com",
+    databaseURL: "https://myfirebasechatapp-2fe56.firebaseio.com",
+    projectId: "myfirebasechatapp-2fe56",
+    storageBucket: "myfirebasechatapp-2fe56.appspot.com",
+    messagingSenderId: "941607125908"
+  };
+  firebase.initializeApp(config);
 
-const db = firebase.firestore();
+  const db = firebase.firestore();
 
-db.settings({
-  timestampsInSnapshots: true,
-});
+  db.settings({
+    timestampsInSnapshots: true,
+  });
 
-const collection = db.collection('messages');
-const auth = firebase.auth();
-let me = null;
+  const collection = db.collection('messages');
+  const auth = firebase.auth();
+  let me = null;
 
-const message = document.getElementById('message');
-const form = document.querySelector('form');
-const messages = document.getElementById('messages');
-const login = document.getElementById('login');
-const logout = document.getElementById('logout');
+  const message = document.getElementById('message');
+  const form = document.querySelector('form');
+  const messages = document.getElementById('messages');
+  const login = document.getElementById('login');
+  const logout = document.getElementById('logout');
 
-login.addEventListener('click', () => {
-  auth.signInAnonymously();
-});
+  login.addEventListener('click', () => {
+    auth.signInAnonymously();
+  });
 
-logout.addEventListener('click', () => {
-  auth.signOut();
-});
+  logout.addEventListener('click', () => {
+    auth.signOut();
+  });
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    me = user;
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      me = user;
 
-    while (messages.firstChild) {
-      messages.removeChild(messages.firstChild);
-    }
+      while (messages.firstChild) {
+        messages.removeChild(messages.firstChild);
+      }
 
-    collection.orderBy('created').onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-          const li = document.createElement('li');
-          const d = change.doc.data();
-          li.textContent = d.uid.substr(0, 8) + ': ' + d.message;
-          messages.appendChild(li);
-        }
+      collection.orderBy('created').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const li = document.createElement('li');
+            const d = change.doc.data();
+            li.textContent = d.uid.substr(0, 8) + ': ' + d.message;
+            messages.appendChild(li);
+          }
+        });
+      }, error => {});
+      console.log(`Logged in as: ${user.uid}`);
+
+      login.classList.add('hidden');
+
+      [logout, form, messages].forEach(el => {
+        el.classList.remove('hidden');
       });
-    }, error => {});
-    console.log(`Logged in as: ${user.uid}`);
 
-    login.classList.add('hidden');
+      message.focus();
+
+      return;
+    }
+    me = null;
+
+    console.log('Nobody is logged in');
+
+    login.classList.remove('hidden');
 
     [logout, form, messages].forEach(el => {
-      el.classList.remove('hidden');
+      el.classList.add('hidden');
     });
+  });
 
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const val = message.value.trim();
+    if (val === '') return
+
+    message.value = '';
     message.focus();
 
-    return;
-  }
-  me = null;
-
-  console.log('Nobody is logged in');
-
-  login.classList.remove('hidden');
-
-  [logout, form, messages].forEach(el => {
-    el.classList.add('hidden');
-  });
-});
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-
-  const val = message.value.trim();
-  if (val === '') return
-
-  message.value = '';
-  message.focus();
-
-  collection.add({
-    message: val,
-    created: firebase.firestore.FieldValue.serverTimestamp(),
-    uid: me ? me.uid : 'nobody',
-  })
-    .then(doc => {
-      console.log(`${doc.id} added`);
+    collection.add({
+      message: val,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+      uid: me ? me.uid : 'nobody',
     })
-    .catch(error => {
-      console.log('document add error!');
-      console.log(error);
-    });
-});
-
+      .then(doc => {
+        console.log(`${doc.id} added`);
+      })
+      .catch(error => {
+        console.log('document add error!');
+        console.log(error);
+      });
+  });
+})();
