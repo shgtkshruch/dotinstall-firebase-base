@@ -37,6 +37,11 @@ logout.addEventListener('click', () => {
 auth.onAuthStateChanged(user => {
   if (user) {
     me = user;
+
+    while (messages.firstChild) {
+      messages.removeChild(messages.firstChild);
+    }
+
     collection.orderBy('created').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type === 'added') {
