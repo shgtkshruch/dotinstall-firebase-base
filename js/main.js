@@ -46,7 +46,7 @@ auth.onAuthStateChanged(user => {
           messages.appendChild(li);
         }
       });
-    });
+    }, error => {});
     console.log(`Logged in as: ${user.uid}`);
 
     login.classList.add('hidden');
@@ -88,6 +88,7 @@ form.addEventListener('submit', e => {
       console.log(`${doc.id} added`);
     })
     .catch(error => {
+      console.log('document add error!');
       console.log(error);
     });
 });
