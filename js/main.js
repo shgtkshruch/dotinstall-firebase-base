@@ -11,13 +11,14 @@ const config = {
 firebase.initializeApp(config);
 
 const db = firebase.firestore();
-const auth = firebase.auth();
 
 db.settings({
   timestampsInSnapshots: true,
 });
 
 const collection = db.collection('messages');
+const auth = firebase.auth();
+let me = null;
 
 const message = document.getElementById('message');
 const form = document.querySelector('form');
@@ -35,11 +36,13 @@ logout.addEventListener('click', () => {
 
 auth.onAuthStateChanged(user => {
   if (user) {
+    me = user;
     collection.orderBy('created').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type === 'added') {
           const li = document.createElement('li');
-          li.textContent = change.doc.data().message;
+          const d = change.doc.data();
+          li.textContent = d.uid.substr(0, 8) + ': ' + d.message;
           messages.appendChild(li);
         }
       });
@@ -56,6 +59,8 @@ auth.onAuthStateChanged(user => {
 
     return;
   }
+  me = null;
+
   console.log('Nobody is logged in');
 
   login.classList.remove('hidden');
@@ -77,6 +82,7 @@ form.addEventListener('submit', e => {
   collection.add({
     message: val,
     created: firebase.firestore.FieldValue.serverTimestamp(),
+    uid: me ? me.uid : 'nobody',
   })
     .then(doc => {
       console.log(`${doc.id} added`);
