@@ -9,3 +9,22 @@ const config = {
   messagingSenderId: "941607125908"
 };
 firebase.initializeApp(config);
+
+const db = firebase.firestore();
+
+db.settings({
+  timestampsInSnapshots: true,
+});
+
+const collection = db.collection('messages');
+
+
+collection.add({
+  message: 'test',
+})
+  .then(doc => {
+    console.log(`${doc.id} added`);
+  })
+  .catch(error => {
+    console.log(error);
+  });
