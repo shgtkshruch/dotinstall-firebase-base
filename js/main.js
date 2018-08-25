@@ -18,13 +18,24 @@ db.settings({
 
 const collection = db.collection('messages');
 
+const message = document.getElementById('message');
+const form = document.querySelector('form');
 
-collection.add({
-  message: 'test',
-})
-  .then(doc => {
-    console.log(`${doc.id} added`);
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  collection.add({
+    message: message.value,
   })
-  .catch(error => {
-    console.log(error);
-  });
+    .then(doc => {
+      console.log(`${doc.id} added`);
+      message.value = '';
+      message.focus();
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
+
+message.focus();
+
