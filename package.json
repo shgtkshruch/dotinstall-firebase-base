@@ -1,0 +1,22 @@
+{
+  "name": "dotinstall-firebase-base",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/shgtkshruch/dotinstall-firebase-base.git"
+  },
+  "author": "shgtkshruch <shgtk.shruch@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shgtkshruch/dotinstall-firebase-base/issues"
+  },
+  "homepage": "https://github.com/shgtkshruch/dotinstall-firebase-base#readme",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}
