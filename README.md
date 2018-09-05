@@ -3,7 +3,7 @@
 lesson: [Learning with JavaScript Introduction to Firebase : dotinstall](https://dotinstall.com/lessons/basic_firebase)
 
 ## Settings
-create `js/config.js` to setting Firenase.
+create `js/config.js` to setting Firebase.
 ```js
 export default {
   apiKey: "your-api-key",
